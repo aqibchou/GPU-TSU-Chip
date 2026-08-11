@@ -1,0 +1,44 @@
+name: chip-ci
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        with:
+          path: ~/vtool
+          key: verilator-v5.048-ubuntu24
+      - name: Install Verilator and Python dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq git help2man perl autoconf flex bison libfl-dev zlib1g-dev ccache zsh
+          if [ ! -x "$HOME/vtool/bin/verilator" ]; then
+            git clone -q --depth 1 -b v5.048 https://github.com/verilator/verilator
+            cd verilator
+            autoconf
+            ./configure --prefix="$HOME/vtool" >/dev/null
+            make -j4 >/dev/null
+            make install >/dev/null
+          fi
+          echo "$HOME/vtool/bin" >> "$GITHUB_PATH"
+          python -m pip install -r requirements.txt
+      - name: Golden self-checks
+        run: |
+          export PYTHONPATH="$GITHUB_WORKSPACE"
+          for model in fifo mul uart xoshiro pbit prng_check gibbs_grid tensor quant4 qsite_golden sampling_isa; do
+            python -m "golden.$model"
+          done
+      - name: RTL lint
+        run: zsh ci/lint.sh
+      - name: Unit and integration tests
+        run: |
+          export MK="$GITHUB_WORKSPACE"
+          export MK_SKIP_TB="rv32i_core"
+          zsh ci/run_units.sh

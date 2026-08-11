@@ -1,0 +1,32 @@
+/* SG0 device-tree overlay (docs/FPGA_IMPLEMENTATION.md#sg0-fpga-bridge).
+ * Compile on-board: dtc -O dtb -o sg0.dtbo -b 0 -@ sg0.dtsi
+ * Deploy with the bitstream via xmutil loadapp (shell.json rides
+ * alongside). Two declarations:
+ *   - the 1 GB carveout at 0x4000_0000 (the SoC's device memory;
+ *     Linux keeps its hands off; host mmaps it via /dev/mem)
+ *   - a uio node for the bridge's AXI-Lite window at the HPM0
+ *     default base (0xA000_0000; confirm against the bd address
+ *     report at build time)
+ */
+/dts-v1/;
+/plugin/;
+
+&{/} {
+    reserved-memory {
+        #address-cells = <2>;
+        #size-cells = <2>;
+        ranges;
+        sg0_carve: sg0carve@40000000 {
+            compatible = "shared-dma-pool";
+            no-map;
+            reg = <0x0 0x40000000 0x0 0x40000000>;
+        };
+    };
+};
+
+&amba {
+    sg0_bridge: sg0bridge@a0000000 {
+        compatible = "generic-uio";
+        reg = <0x0 0xa0000000 0x0 0x1000>;
+    };
+};

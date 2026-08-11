@@ -1,0 +1,4 @@
+cocotb>=2.0
+emcee>=3.1
+numpy>=1.26
+scipy>=1.12

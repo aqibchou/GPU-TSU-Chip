@@ -1,0 +1,8 @@
+# Σ.3 seed policy
+smoke_seed: 0xC0FFEE   # fixed — smoke tests are bit-reproducible forever
+nightly_seed: epoch    # run_units.sh passes MK_FUZZ_SEED=$(date +%s) unless overridden
+# (never name anything RANDOM_SEED — cocotb consumes that env var itself)
+# R3 (pre-registration): statistical gate thresholds are frozen in each
+# gates/*.py header AT CREATION, before any data collection. They are never
+# tuned to make a run pass; changes require a written argument in the script
+# header plus a devlog note.
