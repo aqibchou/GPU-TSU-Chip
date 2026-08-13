@@ -21,14 +21,16 @@ jobs:
           sudo apt-get install -y -qq git help2man perl autoconf flex bison libfl-dev zlib1g-dev ccache zsh
           if [ ! -x "$HOME/vtool/bin/verilator" ]; then
             git clone -q --depth 1 -b v5.048 https://github.com/verilator/verilator
-            cd verilator
-            autoconf
-            ./configure --prefix="$HOME/vtool" >/dev/null
-            make -j4 >/dev/null
-            make install >/dev/null
+            (
+              cd verilator
+              autoconf
+              ./configure --prefix="$HOME/vtool" >/dev/null
+              make -j4 >/dev/null
+              make install >/dev/null
+            )
           fi
           echo "$HOME/vtool/bin" >> "$GITHUB_PATH"
-          python -m pip install -r requirements.txt
+          python -m pip install -r "$GITHUB_WORKSPACE/requirements.txt"
       - name: Golden self-checks
         run: |
           export PYTHONPATH="$GITHUB_WORKSPACE"
