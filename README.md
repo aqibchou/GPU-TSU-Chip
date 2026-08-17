@@ -22,8 +22,11 @@ Kria K26 (`xck26-sfvc784-2LV-c`).
   resources, SG0 bridge, and landed hardware optimizations.
 - [Software and Validation](docs/SOFTWARE_AND_VALIDATION.md) — kernel ABI,
   CUDA-shaped runtime, serving path, GPT-2 validation, and test methodology.
+- [30.9× Plans/Joule Evidence](docs/PLANS_PER_JOULE_30_9X.md) — auditable
+  evidence record for the projected plans/joule headline, including its
+  algorithm-class claim boundary.
 
-These three documents replace the original collection of small specification
+These documents replace the original collection of small specification
 and design-note files.
 
 ## Repository layout
